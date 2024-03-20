@@ -1,2 +1,6 @@
-# goph420-w2024-lab03-stCA
-Repository for lab 03 Least Squares Regression GOPH 420 Course
+# GOPH 420 - Inversion and Parameter Estimation for 
+Geophysicists
+*Semester:* W2023 
+*Instructor:* B. Karchewski 
+*Author:* <Carla Acosta>
+*Topic:* Least Squares Regression
