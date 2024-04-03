@@ -20,15 +20,17 @@ def multi_regress(y, Z):
 # """
 
 # Convert the input data to numpy arrays
+    n,m = Z.shape
     y = np.array([])
     Z = np.array([])
-    n, m = Z.shape 
+    Z = np.column_stack((np.ones(n), Z[:, 1]))
+        
 
     coeffs = np.linalg.lstsq(Z, y)[0] # Perform the regression
     residuals = y - np.dot(Z, coeffs) # Compute the residuals
     ybar = np.mean(y) # Compute the mean of y
     sstot = np.sum((y - ybar) ** 2) # Compute the total sum of squares
     ssres = np.sum(residuals ** 2) # Compute the sum of squared residuals
-    r2 = 1 - ssres / sstot # Compute the coefficient of determination
+    r2 = 1 - ssres / sstot # Compute the r2
 
     return coeffs, residuals, r2
