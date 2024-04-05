@@ -50,7 +50,7 @@ filtered_times = [filtered_times_0, filtered_times_1, filtered_times_2, filtered
 # List of filtered magnitudes lists
 filtered_magnitudes = [filtered_magnitudes_0, filtered_magnitudes_1, filtered_magnitudes_2, filtered_magnitudes_3, filtered_magnitudes_4]
 
-dif_mang = np.arange(-0.6, 0.6, 0.1)
+dif_mang = np.arange(-0.6, 0.4, 0.1)
 values_times = []
 values_magnitudes = []
 for m, (vt, vm) in enumerate(zip(filtered_times, filtered_magnitudes)):
@@ -67,7 +67,7 @@ for i, (times, magnitudes) in enumerate(zip(values_times, values_magnitudes)):
     if i % len(dif_mang) == 0:
         N.append([])
     N[-1].append(count_times)
-    
+print(N)
 for i in range(len(N)):
     plt.figure(figsize=(10, 6))
     plt.plot(dif_mang, N[i], '.') # Plot magnitude against time
@@ -86,6 +86,42 @@ for i in range(len(N)):
     plt.ylabel('Number of Events') # Label the y-axis
     plt.grid(True) # Add a grid for better readability
     plt.savefig (f'figures/Logscale_MvsN_days{i}.png')
-
+    
 log_N = np.log10(N)
-coeffs, residuals, r2 = multi_regress(dif_mang, log_N)
+
+# print (log_N)
+# print (N)
+
+coeficients = []
+residuals = []
+r2 = []
+
+for i in range(len(log_N)):
+    coeffs, residuals, r2 = multi_regress(log_N[i], (-dif_mang))
+    coeficients.append(coeffs)
+
+
+
+#print (coeficients[0][1])
+#print (dif_mang)
+#print (dif_mang[0])
+
+
+prediction = []
+for i in range(len(log_N)):
+    a = coeficients[i][0]
+    b = coeficients[i][1] 
+    model =  10 ** (a - b * dif_mang)
+    prediction.append(model)
+
+    
+for i in range(len(N)):
+    plt.figure(figsize=(10, 6))
+    plt.semilogy(dif_mang, prediction[i], 'r-') # Plot magnitude against time
+    plt.semilogy(dif_mang, N[i], '.') # Plot magnitude against time
+    plt.title(f'Day {i+1}: Magnitude vs Number of Events') # Set the title for each plot
+    plt.xlabel('Magnitudes') # Label the x-axis
+    plt.ylabel('Number of Events') # Label the y-axis
+    plt.grid(True) # Add a grid for better readability
+    plt.savefig (f'figures/Prediction_MvsN_days{i}.png')
+    
