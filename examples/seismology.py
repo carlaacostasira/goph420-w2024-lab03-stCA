@@ -7,6 +7,14 @@ data = np.loadtxt(r"C:/Users/carla/Repos/goph420-w2024-lab03-stCA/examples/M_dat
 time = data[:,0] # First column of data (time [hours])
 magnitude = data[:,1] # Second column of data (magnitude)
 
+plt.figure(figsize=(10, 6)) 
+plt.plot(time, magnitude, '.') # Plot magnitude against time
+plt.title('Magnitude vs Time') # Set the title for the plot
+plt.xlabel('Time (hours)') # Label the x-axis
+plt.ylabel('Magnitude') # Label the y-axis
+plt.grid(True) # Add a grid for better readability
+plt.savefig ('figures/magnitude_time.png')
+
 day_times = []
 day_magnitudes = []
 for day in range(1, 6): # Loop from day 1 to day 5
@@ -53,6 +61,7 @@ filtered_magnitudes = [filtered_magnitudes_0, filtered_magnitudes_1, filtered_ma
 dif_mang = np.arange(-0.6, 0.4, 0.1)
 values_times = []
 values_magnitudes = []
+
 for m, (vt, vm) in enumerate(zip(filtered_times, filtered_magnitudes)):
     for mag in dif_mang:
         values_magnitudes.append([m for m in vm if m > mag])
@@ -60,51 +69,48 @@ for m, (vt, vm) in enumerate(zip(filtered_times, filtered_magnitudes)):
 
 N = []
 
-#Loop to count the number of values in each filtered list
 for i, (times, magnitudes) in enumerate(zip(values_times, values_magnitudes)):
     count_times = len(times)
     count_magnitudes = len(magnitudes)
     if i % len(dif_mang) == 0:
         N.append([])
     N[-1].append(count_times)
-print(N)
+
+print (N)
+
 for i in range(len(N)):
     plt.figure(figsize=(10, 6))
     plt.plot(dif_mang, N[i], '.') # Plot magnitude against time
-    plt.title(f'Day {i+1}: Magnitude vs Number of Events') # Set the title for each plot
-    plt.xlabel('Magnitudes') # Label the x-axis
-    plt.ylabel('Number of Events') # Label the y-axis
-    plt.grid(True) # Add a grid for better readability
+    plt.title(f'Day {i+1}: Magnitude vs Number of Events') 
+    plt.xlabel('Magnitudes') 
+    plt.ylabel('Number of Events') 
+    plt.grid(True) 
     plt.savefig (f'figures/MvsN_days{i}.png')
 
 for i in range(len(N)):
     plt.figure(figsize=(10, 6))
-    plt.plot(dif_mang, N[i], '.') # Plot magnitude against time
-    plt.title(f'Day {i+1}: Magnitude vs Number of Events') # Set the title for each plot
-    plt.yscale('log')
-    plt.xlabel('Magnitudes') # Label the x-axis
-    plt.ylabel('Number of Events') # Label the y-axis
-    plt.grid(True) # Add a grid for better readability
+    plt.semilogy(dif_mang, N[i], '.') # Plot magnitude against time
+    plt.title(f'Day {i+1}: Magnitude vs Number of Events') 
+    plt.xlabel('Magnitudes') 
+    plt.ylabel('Number of Events') 
+    plt.grid(True) 
     plt.savefig (f'figures/Logscale_MvsN_days{i}.png')
     
 log_N = np.log10(N)
 
-# print (log_N)
-# print (N)
-
 coeficients = []
-residuals = []
+residuals_list = [] 
 r2 = []
 
 for i in range(len(log_N)):
-    coeffs, residuals, r2 = multi_regress(log_N[i], (-dif_mang))
+    coeffs, residuals_i, r2_i = multi_regress(log_N[i], (-dif_mang)) 
     coeficients.append(coeffs)
-
-
-
-#print (coeficients[0][1])
-#print (dif_mang)
-#print (dif_mang[0])
+    residuals_list.append(residuals_i) 
+    r2.append(r2_i)
+    
+# print (f'Coefficients: {coeficients}')
+# print (f'Residuals: {residuals_list}') 
+# print (f'R2: {r2}')
 
 
 prediction = []
@@ -113,15 +119,15 @@ for i in range(len(log_N)):
     b = coeficients[i][1] 
     model =  10 ** (a - b * dif_mang)
     prediction.append(model)
-
     
 for i in range(len(N)):
     plt.figure(figsize=(10, 6))
-    plt.semilogy(dif_mang, prediction[i], 'r-') # Plot magnitude against time
-    plt.semilogy(dif_mang, N[i], '.') # Plot magnitude against time
-    plt.title(f'Day {i+1}: Magnitude vs Number of Events') # Set the title for each plot
-    plt.xlabel('Magnitudes') # Label the x-axis
-    plt.ylabel('Number of Events') # Label the y-axis
-    plt.grid(True) # Add a grid for better readability
+    plt.semilogy(dif_mang, prediction[i], 'r-', label = f'Predicted values: Coefficients: a = {coeficients[i][0]:.3f}, b = {coeficients[i][1]:.3f}, $r^2$ = {r2[i]:.3f}') # Plot magnitude against number of events 
+    plt.semilogy(dif_mang, N[i], '.', label = 'Measured values ')
+    # plt.semilogy(dif_mang, residuals_list[i], 'r.', label='Residuals')
+    plt.title(f'Day {i+1}: Magnitude vs Number of Events') 
+    plt.xlabel('Magnitudes') 
+    plt.ylabel('Number of Events') 
+    plt.legend()
+    plt.grid(True) 
     plt.savefig (f'figures/Prediction_MvsN_days{i}.png')
-    

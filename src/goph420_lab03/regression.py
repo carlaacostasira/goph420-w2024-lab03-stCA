@@ -9,6 +9,7 @@ def multi_regress(y, Z):
 # The vector of dependent variable data
 # Z : array_like, shape = (n,m)
 # The matrix of independent variable data
+#
 # Returns
 # -------
 # numpy.ndarray, shape = (m,) or (m,1)
