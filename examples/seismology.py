@@ -62,9 +62,9 @@ dif_mang = np.arange(-0.6, 0.4, 0.1)
 values_times = []
 values_magnitudes = []
 
-for m, (vt, vm) in enumerate(zip(filtered_times, filtered_magnitudes)):
-    for mag in dif_mang:
-        values_magnitudes.append([m for m in vm if m > mag])
+for m, (vt, vm) in enumerate(zip(filtered_times, filtered_magnitudes)): 
+    for mag in dif_mang: 
+        values_magnitudes.append([m for m in vm if m > mag]) 
         values_times.append([t for t, m in zip(vt, vm) if m > mag])
 
 N = []
